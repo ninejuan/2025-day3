@@ -79,4 +79,29 @@ variable "rds_username" {
   type        = string
   default     = "admin"
 }
+
+# ECS Configuration
+variable "ecs_instance_type" {
+  description = "Instance type for ECS instances"
+  type        = string
+  default     = "t3.medium"
+}
+
+variable "ecs_ebs_volume_size" {
+  description = "EBS volume size in GiB for ECS instances"
+  type        = number
+  default     = 50
+}
+
+variable "ecs_min_size" {
+  description = "Minimum number of instances in ECS Auto Scaling Group"
+  type        = number
+  default     = 1
+}
+
+variable "ecs_max_size" {
+  description = "Maximum number of instances in ECS Auto Scaling Group"
+  type        = number
+  default     = 10
+}
  

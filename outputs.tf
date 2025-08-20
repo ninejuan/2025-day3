@@ -264,3 +264,44 @@ output "rds_alarms" {
     connections     = module.cloudwatch.rds_connections_alarm_arn
   }
 }
+
+# ECS Outputs
+output "ecs_cluster_name" {
+  description = "Name of the ECS cluster"
+  value       = module.ecs.cluster_name
+}
+
+output "ecs_cluster_arn" {
+  description = "ARN of the ECS cluster"
+  value       = module.ecs.cluster_arn
+}
+
+output "ecs_capacity_provider_name" {
+  description = "Name of the ECS capacity provider"
+  value       = module.ecs.capacity_provider_name
+}
+
+output "ecs_auto_scaling_group_name" {
+  description = "Name of the ECS Auto Scaling Group"
+  value       = module.ecs.auto_scaling_group_name
+}
+
+output "ecs_launch_template_id" {
+  description = "ID of the ECS launch template"
+  value       = module.ecs.launch_template_id
+}
+
+output "ecs_security_group_id" {
+  description = "ID of the ECS security group"
+  value       = module.ecs.security_group_id
+}
+
+output "ecs_key_pair_name" {
+  description = "Name of the SSH key pair for ECS instances"
+  value       = module.ecs.key_pair_name
+}
+
+output "ecs_iam_role_arn" {
+  description = "ARN of the ECS instance IAM role"
+  value       = module.ecs.iam_role_arn
+}

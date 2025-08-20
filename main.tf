@@ -6,16 +6,17 @@ locals {
   }
   
   s3_bucket_suffix = random_string.s3_suffix.result
+
+  ecs_min_size = 1
+  ecs_max_size = 10
 }
 
-# Random string for S3 bucket naming
 resource "random_string" "s3_suffix" {
   length  = 8
   special = false
   upper   = false
 }
 
-# VPC Module
 module "vpc" {
   source = "./modules/vpc"
 
@@ -27,7 +28,6 @@ module "vpc" {
   private_subnet_cidrs = var.private_subnet_cidrs
 }
 
-# VPC Endpoints Module
 module "vpc_endpoints" {
   source = "./modules/vpc-endpoints"
 
@@ -39,7 +39,6 @@ module "vpc_endpoints" {
   common_tags              = local.common_tags
 }
 
-# Bastion Module
 module "bastion" {
   source = "./modules/bastion"
 
@@ -52,7 +51,6 @@ module "bastion" {
   common_tags      = local.common_tags
 }
 
-# DynamoDB Module
 module "dynamodb" {
   source = "./modules/dynamodb"
 
@@ -61,7 +59,6 @@ module "dynamodb" {
   common_tags               = local.common_tags
 }
 
-# RDS Module
 module "rds" {
   source = "./modules/rds"
 
@@ -76,7 +73,6 @@ module "rds" {
   common_tags              = local.common_tags
 }
 
-# ECR Module
 module "ecr" {
   source = "./modules/ecr"
 
@@ -84,7 +80,6 @@ module "ecr" {
   common_tags = local.common_tags
 }
 
-# S3 Module
 module "s3" {
   source = "./modules/s3"
 
@@ -93,7 +88,6 @@ module "s3" {
   common_tags   = local.common_tags
 }
 
-# CloudWatch Module
 module "cloudwatch" {
   source = "./modules/cloudwatch"
 
@@ -102,4 +96,17 @@ module "cloudwatch" {
   rds_instance_identifier  = module.rds.rds_instance_id
   sns_alarm_topic_arn      = null
   common_tags             = local.common_tags
+}
+
+module "ecs" {
+  source = "./modules/ecs"
+
+  prefix                = var.prefix
+  vpc_id                = module.vpc.vpc_id
+  private_subnet_ids    = module.vpc.private_subnet_ids
+  instance_type         = var.ecs_instance_type
+  ebs_volume_size       = var.ecs_ebs_volume_size
+  min_size              = local.ecs_min_size
+  max_size              = local.ecs_max_size
+  common_tags           = local.common_tags
 }

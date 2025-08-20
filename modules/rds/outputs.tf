@@ -40,7 +40,7 @@ output "rds_subnet_group_name" {
 
 output "rds_parameter_group_name" {
   description = "Name of the RDS parameter group"
-  value       = aws_db_parameter_group.mysql80.name
+  value       = aws_db_parameter_group.main.name
 }
 
 output "rds_password_ssm_parameter" {
@@ -88,12 +88,4 @@ output "connection_info" {
   }
 }
 
-# Performance monitoring outputs
-output "cloudwatch_alarms" {
-  description = "CloudWatch alarm names for monitoring"
-  value = {
-    cpu_utilization = aws_cloudwatch_metric_alarm.rds_cpu.alarm_name
-    connections     = aws_cloudwatch_metric_alarm.rds_connections.alarm_name
-    freeable_memory = aws_cloudwatch_metric_alarm.rds_freeable_memory.alarm_name
-  }
-}
+

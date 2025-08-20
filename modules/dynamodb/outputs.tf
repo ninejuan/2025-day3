@@ -32,16 +32,7 @@ output "product_app_environment_variables" {
   }
 }
 
-# Performance metrics outputs
-output "cloudwatch_alarms" {
-  description = "CloudWatch alarm names for monitoring"
-  value = {
-    read_capacity      = aws_cloudwatch_metric_alarm.dynamodb_consumed_read_capacity.alarm_name
-    write_capacity     = aws_cloudwatch_metric_alarm.dynamodb_consumed_write_capacity.alarm_name
-    throttled_requests = aws_cloudwatch_metric_alarm.dynamodb_throttled_requests.alarm_name
-    high_latency       = aws_cloudwatch_metric_alarm.dynamodb_successful_request_latency.alarm_name
-  }
+output "table_name" {
+  description = "Name of the DynamoDB table for use by other modules"
+  value       = aws_dynamodb_table.product.name
 }
-
-# Data source for current region
-data "aws_region" "current" {}

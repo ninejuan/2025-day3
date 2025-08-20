@@ -33,7 +33,7 @@ systemctl start docker
 systemctl enable docker
 usermod -aG docker ec2-user
 
-TERRAFORM_VERSION="1.5.7"
+TERRAFORM_VERSION="${TERRAFORM_VERSION}"
 wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 mv terraform /usr/local/bin/

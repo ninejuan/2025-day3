@@ -69,16 +69,6 @@ resource "aws_db_parameter_group" "main" {
   }
 
   parameter {
-    name  = "query_cache_size"
-    value = "134217728"
-  }
-
-  parameter {
-    name  = "query_cache_type"
-    value = "1"
-  }
-
-  parameter {
     name  = "tmp_table_size"
     value = "134217728"
   }
@@ -103,6 +93,33 @@ resource "aws_db_parameter_group" "main" {
   })
 }
 
+# IAM Role for RDS Enhanced Monitoring
+resource "aws_iam_role" "rds_monitoring" {
+  name = "${var.prefix}-rds-monitoring-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "monitoring.rds.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = merge(var.common_tags, {
+    Name = "${var.prefix}-rds-monitoring-role"
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "rds_monitoring" {
+  role       = aws_iam_role.rds_monitoring.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+}
+
 resource "aws_db_option_group" "main" {
   name                     = "${var.prefix}-rds-option-group"
   engine_name              = "mysql"
@@ -117,7 +134,7 @@ resource "aws_db_option_group" "main" {
 resource "aws_db_instance" "main" {
   identifier                        = "${var.prefix}-rds-instance"
   engine                           = "mysql"
-  engine_version                   = "8.0.35"
+  engine_version                   = "8.0.43"
   instance_class                   = "db.t3.micro"
   allocated_storage                = 20
   storage_type                     = "gp3"
@@ -132,9 +149,9 @@ resource "aws_db_instance" "main" {
   skip_final_snapshot              = true
   deletion_protection              = var.enable_deletion_protection
   backup_retention_period          = 7
-  performance_insights_enabled     = true
-  performance_insights_retention_period = 7
+  performance_insights_enabled     = false
   monitoring_interval              = 60
+  monitoring_role_arn              = aws_iam_role.rds_monitoring.arn
   parameter_group_name             = aws_db_parameter_group.main.name
   option_group_name                = aws_db_option_group.main.name
 

@@ -8,6 +8,6 @@
 - OK 3. RDS
 - OK 4. DynamoDB
 - 5. ECS Container
-- 6. ECR Repository
-- 7. S3 bucket for logging
-- 8. CloudWatch
+- OK 6. ECR Repository
+- OK 7. S3 bucket for logging
+- OK 8. CloudWatch

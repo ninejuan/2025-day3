@@ -175,7 +175,8 @@ resource "aws_iam_instance_profile" "bastion" {
 # User data script for Bastion Host
 locals {
   user_data = base64encode(templatefile("${path.module}/user_data.sh", {
-    ssh_port = var.ssh_port
+    ssh_port           = var.ssh_port
+    TERRAFORM_VERSION  = "1.5.7"
   }))
 }
 

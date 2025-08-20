@@ -205,6 +205,43 @@ output "rds_connection_info" {
   value       = module.rds.connection_info
 }
 
+# ECR Outputs
+output "ecr_repository_urls" {
+  description = "Map of ECR repository names to their URLs"
+  value       = module.ecr.repository_urls
+}
+
+output "product_ecr_url" {
+  description = "Product service ECR repository URL"
+  value       = module.ecr.product_repository_url
+}
+
+output "user_ecr_url" {
+  description = "User service ECR repository URL"
+  value       = module.ecr.user_repository_url
+}
+
+output "stress_ecr_url" {
+  description = "Stress testing ECR repository URL"
+  value       = module.ecr.stress_repository_url
+}
+
+# S3 Outputs
+output "s3_bucket_name" {
+  description = "The name of the S3 bucket"
+  value       = module.s3.bucket_name
+}
+
+output "s3_bucket_arn" {
+  description = "The ARN of the S3 bucket"
+  value       = module.s3.bucket_arn
+}
+
+output "s3_bucket_domain_name" {
+  description = "The S3 bucket domain name"
+  value       = module.s3.bucket_domain_name
+}
+
 # CloudWatch Outputs
 output "cloudwatch_alarm_arns" {
   description = "List of all CloudWatch alarm ARNs"

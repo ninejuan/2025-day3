@@ -76,6 +76,23 @@ module "rds" {
   common_tags              = local.common_tags
 }
 
+# ECR Module
+module "ecr" {
+  source = "./modules/ecr"
+
+  prefix      = var.prefix
+  common_tags = local.common_tags
+}
+
+# S3 Module
+module "s3" {
+  source = "./modules/s3"
+
+  prefix        = var.prefix
+  bucket_suffix = local.s3_bucket_suffix
+  common_tags   = local.common_tags
+}
+
 # CloudWatch Module
 module "cloudwatch" {
   source = "./modules/cloudwatch"

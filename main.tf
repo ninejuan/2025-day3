@@ -124,41 +124,41 @@ module "ecs" {
   dynamodb_table_index_name = module.dynamodb.dynamodb_gsi_name
 }
 
-module "deploy" {
-  source = "./modules/deploy"
+# module "deploy" {
+#   source = "./modules/deploy"
 
-  prefix = var.prefix
-  common_tags = local.common_tags
-  vpc_id = module.vpc.vpc_id
-  public_subnet_ids = module.vpc.public_subnet_ids
-  private_subnet_ids = module.vpc.private_subnet_ids
+#   prefix = var.prefix
+#   common_tags = local.common_tags
+#   vpc_id = module.vpc.vpc_id
+#   public_subnet_ids = module.vpc.public_subnet_ids
+#   private_subnet_ids = module.vpc.private_subnet_ids
 
-  ecs_cluster_id = module.ecs.cluster_arn
-  ecs_cluster_name = module.ecs.cluster_name
+#   ecs_cluster_id = module.ecs.cluster_arn
+#   ecs_cluster_name = module.ecs.cluster_name
 
-  user_task_definition_arn = module.ecs.user_task_definition_arn
-  product_task_definition_arn = module.ecs.product_task_definition_arn
-  stress_task_definition_arn = module.ecs.stress_task_definition_arn
+#   user_task_definition_arn = module.ecs.user_task_definition_arn
+#   product_task_definition_arn = module.ecs.product_task_definition_arn
+#   stress_task_definition_arn = module.ecs.stress_task_definition_arn
 
-  user_desired_count = 3
-  user_min_count = 2
-  user_max_count = 10
+#   user_desired_count = 3
+#   user_min_count = 2
+#   user_max_count = 10
 
-  product_desired_count = 3
-  product_min_count = 2
-  product_max_count = 10
+#   product_desired_count = 3
+#   product_min_count = 2
+#   product_max_count = 10
 
-  stress_desired_count = 2
-  stress_min_count = 1
-  stress_max_count = 8
-}
+#   stress_desired_count = 2
+#   stress_min_count = 1
+#   stress_max_count = 8
+# }
 
-module "waf" {
-  source = "./modules/waf"
+# module "waf" {
+#   source = "./modules/waf"
 
-  prefix = var.prefix
-  common_tags = local.common_tags
-  alb_arn = module.deploy.alb_arn
+#   prefix = var.prefix
+#   common_tags = local.common_tags
+#   alb_arn = module.deploy.alb_arn
 
-  depends_on = [module.deploy]
-}
+#   depends_on = [module.deploy]
+# }

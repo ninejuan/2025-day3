@@ -349,7 +349,7 @@ resource "aws_wafv2_regex_pattern_set" "blocked_user_agents" {
   scope       = "REGIONAL"
 
   regular_expression {
-    regex_string = "(bot|crawler|spider|scraper|curl|wget|python|java|perl|ruby)"
+    regex_string = "(bot|crawler|scraper|bot-attack|attack|chaos|stress-test|flooder|load-tester|stress|malicious|malicious-bot|malicious-attack|malicious-ddos|malicious-stress-test|malicious-stress)"
   }
 
   tags = var.common_tags

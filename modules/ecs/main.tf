@@ -86,6 +86,56 @@ resource "aws_autoscaling_group" "ecs" {
   }
 }
 
+resource "aws_autoscaling_policy" "cpu_scale_up" {
+  name                   = "${var.prefix}-cpu-scale-up"
+  scaling_adjustment     = 2
+  adjustment_type        = "ChangeInCapacity"
+  cooldown              = 300
+  autoscaling_group_name = aws_autoscaling_group.ecs.name
+}
+
+resource "aws_autoscaling_policy" "cpu_scale_down" {
+  name                   = "${var.prefix}-cpu-scale-down"
+  scaling_adjustment     = -1
+  adjustment_type        = "ChangeInCapacity"
+  cooldown              = 300
+  autoscaling_group_name = aws_autoscaling_group.ecs.name
+}
+
+resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+  alarm_name          = "${var.prefix}-cpu-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "70"
+  alarm_description   = "Scale up if CPU > 70% for 10 minutes"
+  alarm_actions       = [aws_autoscaling_policy.cpu_scale_up.arn]
+
+  dimensions = {
+    ClusterName = aws_ecs_cluster.main.name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "cpu_low" {
+  alarm_name          = "${var.prefix}-cpu-low"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "30"
+  alarm_description   = "Scale down if CPU < 30% for 10 minutes"
+  alarm_actions       = [aws_autoscaling_policy.cpu_scale_down.arn]
+
+  dimensions = {
+    ClusterName = aws_ecs_cluster.main.name
+  }
+}
+
 resource "aws_launch_template" "ecs" {
   name_prefix   = "${var.prefix}-ecs-lt"
   image_id      = data.aws_ami.amazon_linux.id
@@ -99,9 +149,7 @@ resource "aws_launch_template" "ecs" {
     name = aws_iam_instance_profile.ecs.name
   }
 
-  user_data = base64encode(templatefile("${path.module}/user_data.sh", {
-    cluster_name = aws_ecs_cluster.main.name
-  }))
+  user_data = base64encode("#!/bin/bash\necho 'ECS_CLUSTER=${aws_ecs_cluster.main.name}' >> /etc/ecs/ecs.config")
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -221,7 +269,7 @@ data "aws_ami" "amazon_linux" {
 
   filter {
     name   = "name"
-    values = ["al2023-ami-*-x86_64"]
+    values = ["amzn2-ami-ecs-hvm-*-x86_64-ebs"]
   }
 
   filter {

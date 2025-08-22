@@ -37,3 +37,28 @@ output "iam_role_arn" {
   description = "ARN of the ECS instance IAM role"
   value       = aws_iam_role.ecs.arn
 }
+
+output "user_task_definition_arn" {
+  description = "ARN of the user task definition"
+  value       = aws_ecs_task_definition.user.arn
+}
+
+output "product_task_definition_arn" {
+  description = "ARN of the product task definition"
+  value       = aws_ecs_task_definition.product.arn
+}
+
+output "stress_task_definition_arn" {
+  description = "ARN of the stress task definition"
+  value       = aws_ecs_task_definition.stress.arn
+}
+
+output "task_execution_role_arn" {
+  description = "ARN of the ECS task execution role"
+  value       = aws_iam_role.ecs_task_execution.arn
+}
+
+output "task_role_arn" {
+  description = "ARN of the ECS task role"
+  value       = aws_iam_role.ecs_task_role.arn
+}

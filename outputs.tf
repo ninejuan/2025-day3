@@ -305,3 +305,28 @@ output "ecs_iam_role_arn" {
   description = "ARN of the ECS instance IAM role"
   value       = module.ecs.iam_role_arn
 }
+
+output "user_task_definition_arn" {
+  description = "ARN of the user task definition"
+  value       = module.ecs.user_task_definition_arn
+}
+
+output "product_task_definition_arn" {
+  description = "ARN of the product task definition"
+  value       = module.ecs.product_task_definition_arn
+}
+
+output "stress_task_definition_arn" {
+  description = "ARN of the stress task definition"
+  value       = module.ecs.stress_task_definition_arn
+}
+
+output "ecs_task_execution_role_arn" {
+  description = "ARN of the ECS task execution role"
+  value       = module.ecs.task_execution_role_arn
+}
+
+output "ecs_task_role_arn" {
+  description = "ARN of the ECS task role"
+  value       = module.ecs.task_role_arn
+}

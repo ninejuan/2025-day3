@@ -145,9 +145,9 @@ resource "aws_db_instance" "main" {
   username                         = var.master_username
   password                         = random_password.master_password.result
   port                             = 3306
-  publicly_accessible              = false
+  publicly_accessible              = true
   skip_final_snapshot              = true
-  deletion_protection              = var.enable_deletion_protection
+  deletion_protection              = false
   backup_retention_period          = 7
   performance_insights_enabled     = false
   monitoring_interval              = 60

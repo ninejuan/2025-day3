@@ -41,3 +41,55 @@ variable "max_size" {
   type        = number
   default     = 10
 }
+
+variable "ecr_user_repository_url" {
+  description = "ECR repository URL for user application"
+  type        = string
+}
+
+variable "ecr_product_repository_url" {
+  description = "ECR repository URL for product application"
+  type        = string
+}
+
+variable "ecr_stress_repository_url" {
+  description = "ECR repository URL for stress application"
+  type        = string
+}
+
+variable "mysql_user" {
+  description = "MySQL username"
+  type        = string
+}
+
+variable "mysql_password" {
+  description = "MySQL password"
+  type        = string
+  sensitive   = true
+}
+
+variable "mysql_host" {
+  description = "MySQL host"
+  type        = string
+}
+
+variable "mysql_port" {
+  description = "MySQL port"
+  type        = number
+  default     = 3306
+}
+
+variable "mysql_dbname" {
+  description = "MySQL database name"
+  type        = string
+}
+
+variable "dynamodb_table_name" {
+  description = "DynamoDB table name"
+  type        = string
+}
+
+variable "dynamodb_table_index_name" {
+  description = "DynamoDB table index name"
+  type        = string
+}

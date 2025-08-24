@@ -235,10 +235,25 @@ resource "aws_wafv2_web_acl" "main" {
         }
         statement {
           byte_match_statement {
-            search_string         = "POST"
+            search_string         = "post"
             positional_constraint = "EXACTLY"
             field_to_match {
               method {}
+            }
+            text_transformation {
+              priority = 1
+              type     = "LOWERCASE"
+            }
+          }
+        }
+        statement {
+          byte_match_statement {
+            search_string         = "application/json"
+            positional_constraint = "CONTAINS"
+            field_to_match {
+              single_header {
+                name = "content-type"
+              }
             }
             text_transformation {
               priority = 1
@@ -258,7 +273,7 @@ resource "aws_wafv2_web_acl" "main" {
                 }
                 text_transformation {
                   priority = 1
-                  type     = "LOWERCASE"
+                  type     = "COMPRESS_WHITE_SPACE"
                 }
               }
             }
@@ -343,7 +358,7 @@ resource "aws_wafv2_regex_pattern_set" "email_pattern" {
   scope       = "REGIONAL"
 
   regular_expression {
-    regex_string = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+    regex_string = "\"email\"\\s*:\\s*\"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\""
   }
 
   tags = var.common_tags

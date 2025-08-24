@@ -7,17 +7,13 @@
 - OK 2. Bastion (t3.medium)
 - OK 3. RDS
 - OK 4. DynamoDB
-- 5. ECS Container
+- OK 5. ECS Container
 - OK 6. ECR Repository
 - OK 7. S3 bucket for logging
 - OK 8. CloudWatch
 
-할 일
-- ecr에 이미지 푸시
-- ecs 서비스 생성 (w. ALB)
-
-## TAA 전 체크리스트
-- [ ] Deploy, WAF 모듈이 주석 처리되어 있는가?
+## ⚠️ TAA 전 체크리스트 (매우 주의!)
+- [ ] **Deploy, WAF 모듈이 주석 처리되어 있는가?**
 
 ## 1차 TAA 후 작업
 - [ ] Bastion에 접근한 후, awscli 로그인, docker 설치를 진행합니다.

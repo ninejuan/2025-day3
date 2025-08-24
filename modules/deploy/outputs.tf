@@ -77,3 +77,24 @@ output "service_endpoints" {
     healthcheck = "http://${aws_lb.main.dns_name}/healthcheck"
   }
 }
+
+# Dashboard outputs
+output "alb_arn_suffix" {
+  description = "ALB ARN suffix for CloudWatch metrics"
+  value       = aws_lb.main.arn_suffix
+}
+
+output "user_target_group_arn_suffix" {
+  description = "User target group ARN suffix for CloudWatch metrics"
+  value       = aws_lb_target_group.user.arn_suffix
+}
+
+output "product_target_group_arn_suffix" {
+  description = "Product target group ARN suffix for CloudWatch metrics"
+  value       = aws_lb_target_group.product.arn_suffix
+}
+
+output "stress_target_group_arn_suffix" {
+  description = "Stress target group ARN suffix for CloudWatch metrics"
+  value       = aws_lb_target_group.stress.arn_suffix
+}

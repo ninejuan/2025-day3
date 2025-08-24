@@ -243,27 +243,37 @@ output "s3_bucket_domain_name" {
 }
 
 # CloudWatch Outputs
-output "cloudwatch_alarm_arns" {
-  description = "List of all CloudWatch alarm ARNs"
-  value       = module.cloudwatch.alarm_arns
-}
+# output "cloudwatch_alarm_arns" {
+#   description = "List of all CloudWatch alarm ARNs"
+#   value       = module.cloudwatch.alarm_arns
+# }
 
-output "dynamodb_alarms" {
-  description = "DynamoDB CloudWatch alarm ARNs"
-  value = {
-    throttled_requests = module.cloudwatch.dynamodb_throttled_requests_alarm_arn
-    latency           = module.cloudwatch.dynamodb_latency_alarm_arn
-    read_capacity     = module.cloudwatch.dynamodb_read_capacity_alarm_arn
-  }
-}
+# output "cloudwatch_dashboard_url" {
+#   description = "CloudWatch dashboard URL for service monitoring"
+#   value       = module.cloudwatch.dashboard_url
+# }
 
-output "rds_alarms" {
-  description = "RDS CloudWatch alarm ARNs"
-  value = {
-    cpu_utilization = module.cloudwatch.rds_cpu_alarm_arn
-    connections     = module.cloudwatch.rds_connections_alarm_arn
-  }
-}
+# output "cloudwatch_dashboard_name" {
+#   description = "CloudWatch dashboard name"
+#   value       = module.cloudwatch.dashboard_name
+# }
+
+# output "dynamodb_alarms" {
+#   description = "DynamoDB CloudWatch alarm ARNs"
+#   value = {
+#     throttled_requests = module.cloudwatch.dynamodb_throttled_requests_alarm_arn
+#     latency           = module.cloudwatch.dynamodb_latency_alarm_arn
+#     read_capacity     = module.cloudwatch.dynamodb_read_capacity_alarm_arn
+#   }
+# }
+
+# output "rds_alarms" {
+#   description = "RDS CloudWatch alarm ARNs"
+#   value = {
+#     cpu_utilization = module.cloudwatch.rds_cpu_alarm_arn
+#     connections     = module.cloudwatch.rds_connections_alarm_arn
+#   }
+# }
 
 # ECS Outputs
 output "ecs_cluster_name" {
@@ -330,3 +340,34 @@ output "ecs_task_role_arn" {
   description = "ARN of the ECS task role"
   value       = module.ecs.task_role_arn
 }
+
+# Deploy Module Outputs
+# output "alb_dns_name" {
+#   description = "DNS name of the Application Load Balancer"
+#   value       = try(module.deploy.alb_dns_name, "")
+# }
+
+# output "alb_arn" {
+#   description = "ARN of the Application Load Balancer"
+#   value       = try(module.deploy.alb_arn, "")
+# }
+
+# output "service_endpoints" {
+#   description = "Service endpoints for applications"
+#   value       = try(module.deploy.service_endpoints, {})
+# }
+
+# output "user_service_name" {
+#   description = "Name of the user ECS service"
+#   value       = try(module.deploy.user_service_name, "")
+# }
+
+# output "product_service_name" {
+#   description = "Name of the product ECS service"
+#   value       = try(module.deploy.product_service_name, "")
+# }
+
+# output "stress_service_name" {
+#   description = "Name of the stress ECS service"
+#   value       = try(module.deploy.stress_service_name, "")
+# }

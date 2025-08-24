@@ -136,8 +136,8 @@ resource "aws_ecs_task_definition" "stress" {
   family                   = "${var.prefix}-stress-task"
   requires_compatibilities = ["EC2"]
   network_mode             = "bridge"
-  cpu                      = 1024  # 4배 증가 (1초 SLO 달성)
-  memory                   = 1024  # 2배 증가 (부하 처리 성능)
+  cpu                      = 1024
+  memory                   = 1024
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 

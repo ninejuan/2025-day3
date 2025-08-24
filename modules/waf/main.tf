@@ -82,12 +82,12 @@ resource "aws_wafv2_web_acl" "main" {
     }
 
     statement {
-      and_statement {
+      not_statement {
         statement {
-          not_statement {
+          or_statement {
             statement {
               byte_match_statement {
-                search_string         = "GET"
+                search_string         = "get"
                 positional_constraint = "EXACTLY"
                 field_to_match {
                   method {}
@@ -98,13 +98,9 @@ resource "aws_wafv2_web_acl" "main" {
                 }
               }
             }
-          }
-        }
-        statement {
-          not_statement {
             statement {
               byte_match_statement {
-                search_string         = "POST"
+                search_string         = "post"
                 positional_constraint = "EXACTLY"
                 field_to_match {
                   method {}
@@ -115,13 +111,22 @@ resource "aws_wafv2_web_acl" "main" {
                 }
               }
             }
-          }
-        }
-        statement {
-          not_statement {
             statement {
               byte_match_statement {
-                search_string         = "HEAD"
+                search_string         = "head"
+                positional_constraint = "EXACTLY"
+                field_to_match {
+                  method {}
+                }
+                text_transformation {
+                  priority = 1
+                  type     = "LOWERCASE"
+                }
+              }
+            }
+            statement {
+              byte_match_statement {
+                search_string         = "options"
                 positional_constraint = "EXACTLY"
                 field_to_match {
                   method {}
@@ -144,37 +149,38 @@ resource "aws_wafv2_web_acl" "main" {
     }
   }
 
-  rule {
-    name     = "PathWhitelist"
-    priority = 20
-
-    action {
-      block {}
-    }
-
-    statement {
-      not_statement {
-        statement {
-          regex_pattern_set_reference_statement {
-            arn = aws_wafv2_regex_pattern_set.path_whitelist.arn
-            field_to_match {
-              uri_path {}
-            }
-            text_transformation {
-              priority = 1
-              type     = "LOWERCASE"
-            }
-          }
-        }
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "PathWhitelistMetric"
-      sampled_requests_enabled   = true
-    }
-  }
+  # PathWhitelist rule - commented out to allow natural 404/403 handling by ALB
+  # rule {
+  #   name     = "PathWhitelist"
+  #   priority = 20
+  #
+  #   action {
+  #     block {}
+  #   }
+  #
+  #   statement {
+  #     not_statement {
+  #       statement {
+  #         regex_pattern_set_reference_statement {
+  #           arn = aws_wafv2_regex_pattern_set.path_whitelist.arn
+  #           field_to_match {
+  #             uri_path {}
+  #           }
+  #           text_transformation {
+  #             priority = 1
+  #             type     = "LOWERCASE"
+  #           }
+  #         }
+  #       }
+  #     }
+  #   }
+  #
+  #   visibility_config {
+  #     cloudwatch_metrics_enabled = true
+  #     metric_name                = "PathWhitelistMetric"
+  #     sampled_requests_enabled   = true
+  #   }
+  # }
 
   rule {
     name     = "MaliciousPathBlock"
@@ -361,7 +367,7 @@ resource "aws_wafv2_web_acl_association" "alb" {
 }
 
 resource "aws_cloudwatch_log_group" "waf" {
-  name              = "/aws/wafv2/${var.prefix}-waf"
+  name              = "aws-waf-logs-${var.prefix}"
   retention_in_days = 7
 
   tags = var.common_tags

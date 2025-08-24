@@ -50,7 +50,7 @@ resource "aws_lb_target_group" "user" {
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
-  target_type = "ip"
+  target_type = "instance"
 
   health_check {
     enabled             = true
@@ -74,7 +74,7 @@ resource "aws_lb_target_group" "product" {
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
-  target_type = "ip"
+  target_type = "instance"
 
   health_check {
     enabled             = true
@@ -98,7 +98,7 @@ resource "aws_lb_target_group" "stress" {
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
-  target_type = "ip"
+  target_type = "instance"
 
   health_check {
     enabled             = true
@@ -141,8 +141,12 @@ resource "aws_lb_listener_rule" "user" {
   priority     = 100
 
   action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.user.arn
+    type = "forward"
+    forward {
+      target_group {
+        arn = aws_lb_target_group.user.arn
+      }
+    }
   }
 
   condition {
@@ -161,8 +165,12 @@ resource "aws_lb_listener_rule" "product" {
   priority     = 200
 
   action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.product.arn
+    type = "forward"
+    forward {
+      target_group {
+        arn = aws_lb_target_group.product.arn
+      }
+    }
   }
 
   condition {
@@ -181,8 +189,12 @@ resource "aws_lb_listener_rule" "stress" {
   priority     = 300
 
   action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.stress.arn
+    type = "forward"
+    forward {
+      target_group {
+        arn = aws_lb_target_group.stress.arn
+      }
+    }
   }
 
   condition {
@@ -201,8 +213,12 @@ resource "aws_lb_listener_rule" "healthcheck" {
   priority     = 400
 
   action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.product.arn
+    type = "forward"
+    forward {
+      target_group {
+        arn = aws_lb_target_group.product.arn
+      }
+    }
   }
 
   condition {
@@ -222,12 +238,6 @@ resource "aws_ecs_service" "user" {
   task_definition = var.user_task_definition_arn
   desired_count   = var.user_desired_count
   launch_type     = "EC2"
-
-  network_configuration {
-    subnets          = var.private_subnet_ids
-    security_groups  = [aws_security_group.ecs_service.id]
-    assign_public_ip = false
-  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.user.arn
@@ -260,12 +270,6 @@ resource "aws_ecs_service" "product" {
   desired_count   = var.product_desired_count
   launch_type     = "EC2"
 
-  network_configuration {
-    subnets          = var.private_subnet_ids
-    security_groups  = [aws_security_group.ecs_service.id]
-    assign_public_ip = false
-  }
-
   load_balancer {
     target_group_arn = aws_lb_target_group.product.arn
     container_name   = "product"
@@ -296,12 +300,6 @@ resource "aws_ecs_service" "stress" {
   task_definition = var.stress_task_definition_arn
   desired_count   = var.stress_desired_count
   launch_type     = "EC2"
-
-  network_configuration {
-    subnets          = var.private_subnet_ids
-    security_groups  = [aws_security_group.ecs_service.id]
-    assign_public_ip = false
-  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.stress.arn
@@ -419,4 +417,131 @@ resource "aws_appautoscaling_policy" "stress_cpu" {
     }
     target_value = 70.0
   }
+}
+
+# CloudWatch Alarms for SLO Monitoring
+resource "aws_cloudwatch_metric_alarm" "user_response_time" {
+  alarm_name          = "${var.prefix}-user-response-time"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "TargetResponseTime"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "0.2"
+  alarm_description   = "This metric monitors user service response time SLO (0.2s target)"
+  alarm_actions       = []
+
+  dimensions = {
+    TargetGroup = aws_lb_target_group.user.arn_suffix
+  }
+
+  depends_on = [aws_ecs_service.user]
+
+  tags = var.common_tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "user_response_time_critical" {
+  alarm_name          = "${var.prefix}-user-response-time-critical"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "TargetResponseTime"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "5.0"
+  alarm_description   = "This metric monitors user service response time critical threshold (5s max)"
+  alarm_actions       = []
+
+  dimensions = {
+    TargetGroup = aws_lb_target_group.user.arn_suffix
+  }
+
+  depends_on = [aws_ecs_service.user]
+
+  tags = var.common_tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "product_response_time" {
+  alarm_name          = "${var.prefix}-product-response-time"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "TargetResponseTime"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "0.2"
+  alarm_description   = "This metric monitors product service response time SLO (0.2s target)"
+  alarm_actions       = []
+
+  dimensions = {
+    TargetGroup = aws_lb_target_group.product.arn_suffix
+  }
+
+  depends_on = [aws_ecs_service.product]
+
+  tags = var.common_tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "product_response_time_critical" {
+  alarm_name          = "${var.prefix}-product-response-time-critical"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "TargetResponseTime"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "5.0"
+  alarm_description   = "This metric monitors product service response time critical threshold (5s max)"
+  alarm_actions       = []
+
+  dimensions = {
+    TargetGroup = aws_lb_target_group.product.arn_suffix
+  }
+
+  depends_on = [aws_ecs_service.product]
+
+  tags = var.common_tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "stress_response_time" {
+  alarm_name          = "${var.prefix}-stress-response-time"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "TargetResponseTime"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "1.0"
+  alarm_description   = "This metric monitors stress service response time SLO (1s target)"
+  alarm_actions       = []
+
+  dimensions = {
+    TargetGroup = aws_lb_target_group.stress.arn_suffix
+  }
+
+  depends_on = [aws_ecs_service.stress]
+
+  tags = var.common_tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "stress_response_time_critical" {
+  alarm_name          = "${var.prefix}-stress-response-time-critical"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "TargetResponseTime"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "5.0"
+  alarm_description   = "This metric monitors stress service response time critical threshold (5s max)"
+  alarm_actions       = []
+
+  dimensions = {
+    TargetGroup = aws_lb_target_group.stress.arn_suffix
+  }
+
+  depends_on = [aws_ecs_service.stress]
+
+  tags = var.common_tags
 }

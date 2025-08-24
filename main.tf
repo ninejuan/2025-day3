@@ -7,8 +7,8 @@ locals {
   
   s3_bucket_suffix = random_string.s3_suffix.result
 
-  ecs_min_size = 1
-  ecs_max_size = 10
+  ecs_min_size = 1    # 1.0 ratio 기준 (기본값)
+  ecs_max_size = 15   # 필요시 확장
 }
 
 resource "random_string" "s3_suffix" {
@@ -140,17 +140,17 @@ module "deploy" {
   product_task_definition_arn = module.ecs.product_task_definition_arn
   stress_task_definition_arn = module.ecs.stress_task_definition_arn
 
-  user_desired_count = 3
-  user_min_count = 2
-  user_max_count = 10
+  user_desired_count = 2   # 1.0 ratio 기준
+  user_min_count = 2       # 최소 가용성
+  user_max_count = 8       # 확장
 
-  product_desired_count = 3
-  product_min_count = 2
-  product_max_count = 10
+  product_desired_count = 2   # 1.0 ratio 기준
+  product_min_count = 2       # 최소 가용성  
+  product_max_count = 20      # 트래픽 증가시 확장
 
-  stress_desired_count = 2
-  stress_min_count = 1
-  stress_max_count = 8
+  stress_desired_count = 2   # 1.0 ratio 기준
+  stress_min_count = 2       # 최소 가용성
+  stress_max_count = 6       # 확장
 }
 
 module "waf" {

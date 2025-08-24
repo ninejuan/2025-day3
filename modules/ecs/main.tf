@@ -88,9 +88,9 @@ resource "aws_autoscaling_group" "ecs" {
 
 resource "aws_autoscaling_policy" "cpu_scale_up" {
   name                   = "${var.prefix}-cpu-scale-up"
-  scaling_adjustment     = 2
+  scaling_adjustment     = 5
   adjustment_type        = "ChangeInCapacity"
-  cooldown              = 300
+  cooldown              = 180
   autoscaling_group_name = aws_autoscaling_group.ecs.name
 }
 

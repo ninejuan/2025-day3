@@ -3,41 +3,11 @@ resource "aws_dynamodb_table" "product" {
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "id"
   
-#   read_capacity  = 40000
-#   write_capacity = 40000
-  
   attribute {
     name = "id"
     type = "S"
   }
-
-  attribute {
-    name = "partition_key"
-    type = "S"
-  }
-
-  attribute {
-    name = "name"
-    type = "S"
-  }
-
-  global_secondary_index {
-    name            = "NameIndex"
-    hash_key        = "name"
-    # read_capacity   = 25000
-    # write_capacity  = 5000
-    projection_type = "ALL"
-  }
-
-  global_secondary_index {
-    name            = "PartitionIndex"
-    hash_key        = "partition_key"
-    range_key       = "id"
-    # read_capacity   = 25000
-    # write_capacity  = 5000
-    projection_type = "ALL"
-  }
-
+  
   point_in_time_recovery {
     enabled = true
   }
@@ -46,19 +16,11 @@ resource "aws_dynamodb_table" "product" {
     enabled = true
   }
 
-  stream_enabled                   = true
-  stream_view_type                = "NEW_AND_OLD_IMAGES"
-  table_class                     = "STANDARD"
+  stream_enabled = false
+  table_class    = "STANDARD"
   
   tags = merge(var.common_tags, {
     Name    = "${var.prefix}-product-table"
     Service = "Product"
   })
 }
-
-resource "aws_dynamodb_contributor_insights" "product" {
-  table_name = aws_dynamodb_table.product.name
-
-  depends_on = [ aws_dynamodb_table.product ]
-}
-

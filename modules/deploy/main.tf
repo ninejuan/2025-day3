@@ -385,7 +385,9 @@ resource "aws_appautoscaling_policy" "user_cpu" {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
-    target_value = 70.0
+    target_value = 60.0
+    scale_out_cooldown = 30
+    scale_in_cooldown = 300
   }
 }
 
@@ -400,7 +402,9 @@ resource "aws_appautoscaling_policy" "product_cpu" {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
-    target_value = 70.0
+    target_value = 60.0
+    scale_out_cooldown = 30
+    scale_in_cooldown = 300
   }
 }
 
@@ -416,6 +420,8 @@ resource "aws_appautoscaling_policy" "stress_cpu" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
     target_value = 70.0
+    scale_out_cooldown = 30
+    scale_in_cooldown = 300
   }
 }
 

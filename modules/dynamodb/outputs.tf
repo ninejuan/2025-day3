@@ -15,12 +15,12 @@ output "dynamodb_table_id" {
 
 output "dynamodb_gsi_name" {
   description = "Name of the Global Secondary Index"
-  value       = "NameIndex"
+  value       = ""
 }
 
 output "dynamodb_stream_arn" {
   description = "ARN of the DynamoDB stream"
-  value       = aws_dynamodb_table.product.stream_arn
+  value       = null  # Stream disabled for performance
 }
 
 # Environment variables for product application
@@ -28,7 +28,7 @@ output "product_app_environment_variables" {
   description = "Environment variables for the product application"
   value = {
     TABLE_NAME       = aws_dynamodb_table.product.name
-    TABLE_INDEX_NAME = "NameIndex"
+    TABLE_INDEX_NAME = ""
   }
 }
 

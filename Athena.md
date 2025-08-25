@@ -152,3 +152,58 @@ FROM api_logs
 GROUP BY api_path, elb_status_code
 ORDER BY cnt DESC;
 ```
+
+- 처리 시간이 5초를 초과하는 요청들
+```sql
+SELECT 
+    time,
+    client_ip,
+    client_port,
+    target_ip,
+    target_port,
+    request_url,
+    request_verb,
+    request_proto,
+    user_agent,
+    request_processing_time,
+    target_processing_time,
+    response_processing_time,
+    elb_status_code,
+    target_status_code,
+    received_bytes,
+    sent_bytes,
+    ssl_cipher,
+    ssl_protocol
+FROM alb_access_logs
+WHERE request_processing_time > 5
+ORDER BY request_processing_time DESC
+LIMIT 100;
+```
+
+- Status Code가 5xx인 요청
+```sql
+SELECT 
+    client_ip,
+    request_url,
+    elb_status_code,
+    target_status_code,
+    request_processing_time
+FROM alb_access_logs
+WHERE elb_status_code BETWEEN 500 AND 599
+ORDER BY elb_status_code, request_processing_time DESC
+LIMIT 100;
+```
+
+- p99, p95 Request, Response time 확인
+```sql
+SELECT
+    request_url,
+    approx_percentile(request_processing_time, 0.95) AS p95_request_time,
+    approx_percentile(request_processing_time, 0.99) AS p99_request_time,
+    approx_percentile(response_processing_time, 0.95) AS p95_response_time,
+    approx_percentile(response_processing_time, 0.99) AS p99_response_time
+FROM alb_access_logs
+GROUP BY request_url
+ORDER BY p99_response_time DESC
+LIMIT 50;
+```

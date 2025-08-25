@@ -2,8 +2,8 @@ resource "aws_ecs_task_definition" "user" {
   family                   = "${var.prefix}-user-task"
   requires_compatibilities = ["EC2"]
   network_mode             = "bridge"
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = 512
+  memory                   = 1024
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 
@@ -75,8 +75,8 @@ resource "aws_ecs_task_definition" "product" {
   family                   = "${var.prefix}-product-task"
   requires_compatibilities = ["EC2"]
   network_mode             = "bridge"
-  cpu                      = 1024  
-  memory                   = 2048 
+  cpu                      = 512
+  memory                   = 1024
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 

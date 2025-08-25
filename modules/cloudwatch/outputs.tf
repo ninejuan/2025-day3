@@ -36,10 +36,10 @@ output "alarm_arns" {
 
 output "dashboard_url" {
   description = "CloudWatch dashboard URL"
-  value       = length(aws_cloudwatch_dashboard.service_monitoring) > 0 ? "https://ap-northeast-2.console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#dashboards:name=${aws_cloudwatch_dashboard.service_monitoring[0].dashboard_name}" : ""
+  value       = "https://ap-northeast-2.console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#dashboards:name=${aws_cloudwatch_dashboard.service_monitoring.dashboard_name}"
 }
 
 output "dashboard_name" {
   description = "CloudWatch dashboard name"
-  value       = length(aws_cloudwatch_dashboard.service_monitoring) > 0 ? aws_cloudwatch_dashboard.service_monitoring[0].dashboard_name : ""
+  value       = aws_cloudwatch_dashboard.service_monitoring.dashboard_name
 }

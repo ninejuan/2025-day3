@@ -7,6 +7,18 @@ resource "aws_lb" "main" {
 
   enable_deletion_protection = false
 
+  access_logs {
+    bucket  = var.s3_bucket_name
+    prefix  = "alb-access-logs"
+    enabled = true
+  }
+
+  connection_logs {
+    bucket  = var.s3_bucket_name
+    prefix  = "alb-connection-logs"
+    enabled = true
+  }
+
   tags = merge(var.common_tags, {
     Name = "${var.prefix}-alb"
   })

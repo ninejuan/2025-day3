@@ -9,8 +9,8 @@ output "rds_instance_arn" {
 }
 
 output "rds_endpoint" {
-  description = "RDS instance endpoint"
-  value       = aws_db_instance.main.endpoint
+  description = "RDS instance endpoint (hostname only, no port)"
+  value       = aws_db_instance.main.address
 }
 
 output "rds_port" {
@@ -59,7 +59,7 @@ output "rds_password_ssm_parameter" {
 output "user_app_environment_variables" {
   description = "Environment variables for the user application (정확한 변수명)"
   value = {
-    MYSQL_HOST     = aws_db_instance.main.endpoint
+    MYSQL_HOST     = aws_db_instance.main.address
     MYSQL_PORT     = aws_db_instance.main.port
     MYSQL_DBNAME   = aws_db_instance.main.db_name
     MYSQL_USER     = aws_db_instance.main.username
@@ -71,7 +71,7 @@ output "user_app_environment_variables" {
 output "user_app_dedicated_user" {
   description = "Dedicated database user for user application (권장)"
   value = {
-    MYSQL_HOST     = aws_db_instance.main.endpoint
+    MYSQL_HOST     = aws_db_instance.main.address
     MYSQL_PORT     = aws_db_instance.main.port
     MYSQL_DBNAME   = "userdb"
     MYSQL_USER     = "userapp"
@@ -83,7 +83,7 @@ output "user_app_dedicated_user" {
 output "connection_info" {
   description = "RDS connection information"
   value = {
-    endpoint  = aws_db_instance.main.endpoint
+    hostname  = aws_db_instance.main.address
     port      = aws_db_instance.main.port
     database  = aws_db_instance.main.db_name
     username  = aws_db_instance.main.username

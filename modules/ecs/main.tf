@@ -88,9 +88,9 @@ resource "aws_autoscaling_group" "ecs" {
 
 resource "aws_autoscaling_policy" "cpu_scale_up" {
   name                   = "${var.prefix}-cpu-scale-up"
-  scaling_adjustment     = 5
+  scaling_adjustment     = 3
   adjustment_type        = "ChangeInCapacity"
-  cooldown              = 180
+  cooldown              = 120
   autoscaling_group_name = aws_autoscaling_group.ecs.name
 }
 
@@ -105,13 +105,13 @@ resource "aws_autoscaling_policy" "cpu_scale_down" {
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   alarm_name          = "${var.prefix}-cpu-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
-  period              = "300"
+  period              = "180"
   statistic           = "Average"
-  threshold           = "70"
-  alarm_description   = "Scale up if CPU > 70% for 10 minutes"
+  threshold           = "60"
+  alarm_description   = "Scale up if CPU > 60% for 3 minutes"
   alarm_actions       = [aws_autoscaling_policy.cpu_scale_up.arn]
 
   dimensions = {
@@ -122,13 +122,13 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   alarm_name          = "${var.prefix}-cpu-low"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "3"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = "300"
   statistic           = "Average"
-  threshold           = "30"
-  alarm_description   = "Scale down if CPU < 30% for 10 minutes"
+  threshold           = "25"
+  alarm_description   = "Scale down if CPU < 25% for 15 minutes"
   alarm_actions       = [aws_autoscaling_policy.cpu_scale_down.arn]
 
   dimensions = {

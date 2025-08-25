@@ -30,10 +30,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "main" {
 resource "aws_s3_bucket_public_access_block" "main" {
   bucket = aws_s3_bucket.main.id
 
-  block_public_acls       = var.block_public_access
-  block_public_policy     = var.block_public_access
-  ignore_public_acls      = var.block_public_access
-  restrict_public_buckets = var.block_public_access
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "main" {
@@ -74,4 +74,29 @@ resource "aws_s3_bucket_lifecycle_configuration" "main" {
       noncurrent_days = 30
     }
   }
+}
+
+resource "aws_s3_bucket_policy" "alb_logs" {
+  bucket = aws_s3_bucket.main.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = "*"
+        Action = [
+          "s3:PutObject",
+          "s3:GetBucketAcl",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          aws_s3_bucket.main.arn,
+          "${aws_s3_bucket.main.arn}/*"
+        ]
+      }
+    ]
+  })
+
+  depends_on = [aws_s3_bucket_public_access_block.main]
 }

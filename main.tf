@@ -39,17 +39,17 @@ module "vpc_endpoints" {
   common_tags              = local.common_tags
 }
 
-# module "bastion" {
-#   source = "./modules/bastion"
+module "bastion" {
+  source = "./modules/bastion"
 
-#   prefix            = var.prefix
-#   vpc_id            = module.vpc.vpc_id
-#   vpc_cidr_block   = module.vpc.vpc_cidr_block
-#   public_subnet_ids = module.vpc.public_subnet_ids
-#   instance_type     = var.bastion_instance_type
-#   ssh_port         = var.ssh_port
-#   common_tags      = local.common_tags
-# }
+  prefix            = var.prefix
+  vpc_id            = module.vpc.vpc_id
+  vpc_cidr_block   = module.vpc.vpc_cidr_block
+  public_subnet_ids = module.vpc.public_subnet_ids
+  instance_type     = var.bastion_instance_type
+  ssh_port         = var.ssh_port
+  common_tags      = local.common_tags
+}
 
 module "dynamodb" {
   source = "./modules/dynamodb"
@@ -64,8 +64,10 @@ module "rds" {
 
   prefix                    = var.prefix
   vpc_id                    = module.vpc.vpc_id
-  private_subnet_ids        = module.vpc.private_subnet_ids
-  private_subnet_cidrs      = var.private_subnet_cidrs
+  # private_subnet_ids        = module.vpc.private_subnet_ids
+  private_subnet_ids        = module.vpc.public_subnet_ids
+  # private_subnet_cidrs      = var.private_subnet_cidrs
+  private_subnet_cidrs      = module.vpc.public_subnet_cidrs
   database_name             = var.rds_database_name
   master_username           = var.rds_username
   enable_deletion_protection = var.enable_deletion_protection

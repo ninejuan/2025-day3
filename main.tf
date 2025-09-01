@@ -39,17 +39,17 @@ module "vpc_endpoints" {
   common_tags              = local.common_tags
 }
 
-module "bastion" {
-  source = "./modules/bastion"
+# module "bastion" {
+#   source = "./modules/bastion"
 
-  prefix            = var.prefix
-  vpc_id            = module.vpc.vpc_id
-  vpc_cidr_block   = module.vpc.vpc_cidr_block
-  public_subnet_ids = module.vpc.public_subnet_ids
-  instance_type     = var.bastion_instance_type
-  ssh_port         = var.ssh_port
-  common_tags      = local.common_tags
-}
+#   prefix            = var.prefix
+#   vpc_id            = module.vpc.vpc_id
+#   vpc_cidr_block   = module.vpc.vpc_cidr_block
+#   public_subnet_ids = module.vpc.public_subnet_ids
+#   instance_type     = var.bastion_instance_type
+#   ssh_port         = var.ssh_port
+#   common_tags      = local.common_tags
+# }
 
 module "dynamodb" {
   source = "./modules/dynamodb"
@@ -66,7 +66,6 @@ module "rds" {
   vpc_id                    = module.vpc.vpc_id
   private_subnet_ids        = module.vpc.private_subnet_ids
   private_subnet_cidrs      = var.private_subnet_cidrs
-  bastion_security_group_id = module.bastion.bastion_security_group_id
   database_name             = var.rds_database_name
   master_username           = var.rds_username
   enable_deletion_protection = var.enable_deletion_protection
@@ -114,65 +113,65 @@ module "ecs" {
   dynamodb_table_index_name = module.dynamodb.dynamodb_gsi_name
 }
 
-module "deploy" {
-  source = "./modules/deploy"
+# module "deploy" {
+#   source = "./modules/deploy"
 
-  prefix = var.prefix
-  common_tags = local.common_tags
-  vpc_id = module.vpc.vpc_id
-  public_subnet_ids = module.vpc.public_subnet_ids
-  private_subnet_ids = module.vpc.private_subnet_ids
+#   prefix = var.prefix
+#   common_tags = local.common_tags
+#   vpc_id = module.vpc.vpc_id
+#   public_subnet_ids = module.vpc.public_subnet_ids
+#   private_subnet_ids = module.vpc.private_subnet_ids
 
-  ecs_cluster_id = module.ecs.cluster_arn
-  ecs_cluster_name = module.ecs.cluster_name
+#   ecs_cluster_id = module.ecs.cluster_arn
+#   ecs_cluster_name = module.ecs.cluster_name
 
-  user_task_definition_arn = module.ecs.user_task_definition_arn
-  product_task_definition_arn = module.ecs.product_task_definition_arn
-  stress_task_definition_arn = module.ecs.stress_task_definition_arn
+#   user_task_definition_arn = module.ecs.user_task_definition_arn
+#   product_task_definition_arn = module.ecs.product_task_definition_arn
+#   stress_task_definition_arn = module.ecs.stress_task_definition_arn
 
-  user_desired_count = 2
-  user_min_count = 2
-  user_max_count = 8
+#   user_desired_count = 2
+#   user_min_count = 2
+#   user_max_count = 4
 
-  product_desired_count = 2
-  product_min_count = 2
-  product_max_count = 20
+#   product_desired_count = 2
+#   product_min_count = 2
+#   product_max_count = 4
 
-  stress_desired_count = 2
-  stress_min_count = 2
-  stress_max_count = 6
+#   stress_desired_count = 1
+#   stress_min_count = 1
+#   stress_max_count = 2
 
-  s3_bucket_name = module.s3.bucket_name
-}
+#   s3_bucket_name = module.s3.bucket_name
+# }
 
-module "waf" {
-  source = "./modules/waf"
+# module "waf" {
+#   source = "./modules/waf"
 
-  prefix = var.prefix
-  common_tags = local.common_tags
-  alb_arn = module.deploy.alb_arn
+#   prefix = var.prefix
+#   common_tags = local.common_tags
+#   alb_arn = module.deploy.alb_arn
 
-  depends_on = [module.deploy]
-}
+#   depends_on = [module.deploy]
+# }
 
-module "cloudwatch" {
-  source = "./modules/cloudwatch"
+# module "cloudwatch" {
+#   source = "./modules/cloudwatch"
 
-  prefix                            = var.prefix
-  dynamodb_table_name              = module.dynamodb.table_name
-  rds_instance_identifier          = module.rds.rds_instance_id
-  sns_alarm_topic_arn              = null
-  common_tags                      = local.common_tags
+#   prefix                            = var.prefix
+#   dynamodb_table_name              = module.dynamodb.table_name
+#   rds_instance_identifier          = module.rds.rds_instance_id
+#   sns_alarm_topic_arn              = null
+#   common_tags                      = local.common_tags
   
-  alb_arn_suffix                   = try(module.deploy.alb_arn_suffix, "")
-  user_target_group_arn_suffix     = try(module.deploy.user_target_group_arn_suffix, "")
-  product_target_group_arn_suffix  = try(module.deploy.product_target_group_arn_suffix, "")
-  stress_target_group_arn_suffix   = try(module.deploy.stress_target_group_arn_suffix, "")
+#   alb_arn_suffix                   = try(module.deploy.alb_arn_suffix, "")
+#   user_target_group_arn_suffix     = try(module.deploy.user_target_group_arn_suffix, "")
+#   product_target_group_arn_suffix  = try(module.deploy.product_target_group_arn_suffix, "")
+#   stress_target_group_arn_suffix   = try(module.deploy.stress_target_group_arn_suffix, "")
   
-  ecs_cluster_name                 = module.ecs.cluster_name
-  ecs_service_names = {
-    user    = try(module.deploy.user_service_name, "")
-    product = try(module.deploy.product_service_name, "")
-    stress  = try(module.deploy.stress_service_name, "")
-  }
-}
+#   ecs_cluster_name                 = module.ecs.cluster_name
+#   ecs_service_names = {
+#     user    = try(module.deploy.user_service_name, "")
+#     product = try(module.deploy.product_service_name, "")
+#     stress  = try(module.deploy.stress_service_name, "")
+#   }
+# }

@@ -96,12 +96,12 @@ variable "ecs_ebs_volume_size" {
 variable "ecs_min_size" {
   description = "Minimum number of instances in ECS Auto Scaling Group"
   type        = number
-  default     = 5
+  default     = 2
 }
 
 variable "ecs_max_size" {
   description = "Maximum number of instances in ECS Auto Scaling Group"
   type        = number
-  default     = 20
+  default     = 4
 }
  

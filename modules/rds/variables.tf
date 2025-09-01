@@ -18,12 +18,6 @@ variable "private_subnet_cidrs" {
   type        = list(string)
 }
 
-variable "bastion_security_group_id" {
-  description = "Security group ID of bastion host for management access"
-  type        = string
-  default     = null
-}
-
 variable "database_name" {
   description = "Initial database name"
   type        = string

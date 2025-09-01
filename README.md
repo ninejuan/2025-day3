@@ -13,7 +13,7 @@
 - OK 8. CloudWatch
 
 ## ⚠️ TAA 전 체크리스트 (매우 주의!)
-- [ ] **Deploy, WAF 모듈이 주석 처리되어 있는가?**
+- [ ] **Deploy, WAF, CW 모듈이 주석 처리되어 있는가?**
 
 ## 1차 TAA 후 작업
 - [ ] Bastion에 접근한 후, awscli 로그인, docker 설치를 진행합니다.
@@ -30,6 +30,48 @@ mysql -h <rds_url> -P 3306 -u admin -p < modules/rds/init.sql
 ### MySQL Dump 반영하는 방법
 ```sh
 mysql -h <rds_url> -P 3306 -u admin -p userdb < load_user.dump
+```
+
+### 🔗 SSM Session Manager를 통한 서버 접근 방법
+
+#### 1. AWS CLI를 통한 접근
+```bash
+# ECS 인스턴스 목록 확인
+aws ec2 describe-instances --filters "Name=tag:Name,Values=*ecs-instance*" --query 'Reservations[*].Instances[*].[InstanceId,Tags[?Key==`Name`].Value|[0],State.Name]' --output table
+
+# SSM Session 시작 (인스턴스 ID로 접근)
+aws ssm start-session --target i-1234567890abcdef0
+
+# 또는 태그를 통한 접근
+aws ssm start-session --target $(aws ec2 describe-instances --filters "Name=tag:Name,Values=*ecs-instance*" "Name=instance-state-name,Values=running" --query 'Reservations[0].Instances[0].InstanceId' --output text)
+```
+
+#### 2. AWS Console을 통한 접근
+1. AWS Console → EC2 → 인스턴스
+2. ECS 인스턴스 선택
+3. "연결" 버튼 클릭
+4. "Session Manager" 탭 선택
+5. "연결" 클릭
+
+#### 3. ECS 컨테이너에 접근
+```bash
+# ECS 클러스터 확인
+aws ecs list-clusters
+
+# ECS 서비스 확인
+aws ecs list-services --cluster <cluster-name>
+
+# 컨테이너 로그 확인
+aws logs describe-log-groups --log-group-name-prefix "/ecs/"
+```
+
+#### 4. RDS 접근 (SSM Session 내에서)
+```bash
+# SSM Session 내에서 MySQL 클라이언트 설치
+sudo yum install mysql -y
+
+# RDS에 접근
+mysql -h <rds_endpoint> -P 3306 -u admin -p
 ```
 
 ---

@@ -53,15 +53,6 @@ resource "aws_ecs_task_definition" "user" {
 
       stopTimeout = 90
       startTimeout = 60
-
-      healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:8080/healthcheck || exit 1"]
-        interval    = 30
-        timeout     = 5
-        retries     = 3
-        startPeriod = 60
-      }
-
       essential = true
     }
   ])
@@ -75,8 +66,8 @@ resource "aws_ecs_task_definition" "product" {
   family                   = "${var.prefix}-product-task"
   requires_compatibilities = ["EC2"]
   network_mode             = "bridge"
-  cpu                      = 512
-  memory                   = 1024
+  cpu                      = 256
+  memory                   = 512
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 
@@ -114,15 +105,6 @@ resource "aws_ecs_task_definition" "product" {
 
       stopTimeout = 90
       startTimeout = 60
-
-      healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:8080/healthcheck || exit 1"]
-        interval    = 30
-        timeout     = 5
-        retries     = 3
-        startPeriod = 60
-      }
-
       essential = true
     }
   ])
@@ -137,7 +119,7 @@ resource "aws_ecs_task_definition" "stress" {
   requires_compatibilities = ["EC2"]
   network_mode             = "bridge"
   cpu                      = 1024
-  memory                   = 1024
+  memory                   = 2048
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 
@@ -164,15 +146,6 @@ resource "aws_ecs_task_definition" "stress" {
 
       stopTimeout = 120
       startTimeout = 60
-
-      healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:8080/healthcheck || exit 1"]
-        interval    = 30
-        timeout     = 5
-        retries     = 3
-        startPeriod = 60
-      }
-
       essential = true
     }
   ])

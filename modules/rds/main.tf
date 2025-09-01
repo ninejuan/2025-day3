@@ -17,19 +17,10 @@ resource "aws_security_group" "rds" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "MySQL from private subnets"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = var.private_subnet_cidrs
-  }
-
-  ingress {
-    description     = "MySQL from bastion"
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [var.bastion_security_group_id]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {

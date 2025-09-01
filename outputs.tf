@@ -99,48 +99,6 @@ output "vpc_endpoints_security_group_id" {
   value       = module.vpc_endpoints.vpc_endpoints_security_group_id
 }
 
-# Bastion Outputs
-output "bastion_instance_id" {
-  description = "ID of the bastion instance"
-  value       = module.bastion.bastion_instance_id
-}
-
-output "bastion_public_ip" {
-  description = "Public IP address of the bastion instance"
-  value       = module.bastion.bastion_public_ip
-}
-
-output "bastion_private_ip" {
-  description = "Private IP address of the bastion instance"
-  value       = module.bastion.bastion_private_ip
-}
-
-output "bastion_public_dns" {
-  description = "Public DNS name of the bastion instance"
-  value       = module.bastion.bastion_public_dns
-}
-
-output "bastion_security_group_id" {
-  description = "ID of the bastion security group"
-  value       = module.bastion.bastion_security_group_id
-}
-
-output "bastion_key_name" {
-  description = "Name of the SSH key pair for bastion"
-  value       = module.bastion.bastion_key_name
-}
-
-output "bastion_ssh_connection_command" {
-  description = "SSH connection command for bastion host"
-  value       = module.bastion.bastion_ssh_connection_command
-}
-
-output "bastion_private_key_ssm_parameter" {
-  description = "SSM parameter name containing the private key"
-  value       = module.bastion.bastion_private_key_ssm_parameter
-  sensitive   = true
-}
-
 # DynamoDB Outputs
 output "dynamodb_table_name" {
   description = "Name of the DynamoDB table"

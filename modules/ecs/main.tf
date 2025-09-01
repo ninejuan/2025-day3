@@ -248,6 +248,53 @@ resource "aws_iam_role_policy_attachment" "ecs_ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+# Additional SSM Session Manager policy for interactive access
+resource "aws_iam_role_policy" "ecs_ssm_session" {
+  name = "${var.prefix}-ecs-ssm-session-policy"
+  role = aws_iam_role.ecs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:StartSession",
+          "ssm:SendCommand",
+          "ssm:ListCommandInvocations",
+          "ssm:DescribeInstanceInformation",
+          "ssm:DescribeDocumentParameters",
+          "ssm:DescribeDocument",
+          "ssm:GetCommandInvocation"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2messages:AcknowledgeMessage",
+          "ec2messages:DeleteMessage",
+          "ec2messages:FailMessage",
+          "ec2messages:GetEndpoint",
+          "ec2messages:GetMessages",
+          "ec2messages:SendReply"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "ecs_cloudwatch" {
   role       = aws_iam_role.ecs.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"

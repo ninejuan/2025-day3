@@ -13,7 +13,7 @@ for app in product user stress; do
 
     cd "example_app/$app"
     docker build --platform linux/amd64 -t "$PROJECT_PREFIX-$app:latest" .
-    docker tag "$PROJECT_PREFIX-$app:latest" "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$PROJECT_PREFIX-$app:latest"
-    docker push "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$PROJECT_PREFIX-$app:latest"
+    docker tag "$PROJECT_PREFIX-$app:latest" "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$PROJECT_PREFIX-$app:v1"
+    docker push "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$PROJECT_PREFIX-$app:v1"
     cd ../..
 done

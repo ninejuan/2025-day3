@@ -1,4 +1,4 @@
-# Data source for latest Amazon Linux 2023 AMI
+
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
@@ -14,7 +14,6 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-# Create AWS key pair using pre-generated public key
 resource "aws_key_pair" "bastion_key" {
   key_name   = "${var.prefix}-bastion-key"
   public_key = file("${path.module}/bastion-key.pub")
@@ -24,7 +23,6 @@ resource "aws_key_pair" "bastion_key" {
   })
 }
 
-# Store pre-generated private key in SSM Parameter Store
 resource "aws_ssm_parameter" "bastion_private_key" {
   name  = "/${var.prefix}/bastion/private-key"
   type  = "SecureString"
@@ -35,12 +33,10 @@ resource "aws_ssm_parameter" "bastion_private_key" {
   })
 }
 
-# Security Group for Bastion Host
 resource "aws_security_group" "bastion" {
   name_prefix = "${var.prefix}-bastion-"
   vpc_id      = var.vpc_id
 
-  # SSH access from anywhere (adjust as needed for security)
   ingress {
     description = "SSH from anywhere"
     from_port   = var.ssh_port
@@ -49,7 +45,6 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # ICMP for ping
   ingress {
     description = "ICMP"
     from_port   = -1
@@ -58,7 +53,6 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = [var.vpc_cidr_block]
   }
 
-  # Outbound internet access
   egress {
     from_port   = 0
     to_port     = 0
@@ -75,7 +69,6 @@ resource "aws_security_group" "bastion" {
   }
 }
 
-# IAM role for Bastion Host
 resource "aws_iam_role" "bastion" {
   name = "${var.prefix}-bastion-role"
 
@@ -97,7 +90,6 @@ resource "aws_iam_role" "bastion" {
   })
 }
 
-# IAM policy for Bastion Host (SSM access)
 resource "aws_iam_role_policy" "bastion_policy" {
   name = "${var.prefix}-bastion-policy"
   role = aws_iam_role.bastion.id
@@ -156,13 +148,11 @@ resource "aws_iam_role_policy" "bastion_policy" {
   })
 }
 
-# Attach AWS managed SSM policy
 resource "aws_iam_role_policy_attachment" "bastion_ssm" {
   role       = aws_iam_role.bastion.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# IAM instance profile
 resource "aws_iam_instance_profile" "bastion" {
   name = "${var.prefix}-bastion-profile"
   role = aws_iam_role.bastion.name
@@ -172,7 +162,6 @@ resource "aws_iam_instance_profile" "bastion" {
   })
 }
 
-# User data script for Bastion Host
 locals {
   user_data = base64encode(templatefile("${path.module}/user_data.sh", {
     ssh_port           = var.ssh_port
@@ -180,11 +169,10 @@ locals {
   }))
 }
 
-# Bastion Host EC2 Instance
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.amazon_linux.id
   instance_type               = var.instance_type
-  subnet_id                   = var.public_subnet_ids[0]  # First public subnet
+  subnet_id                   = var.public_subnet_ids[0]
   vpc_security_group_ids      = [aws_security_group.bastion.id]
   key_name                    = aws_key_pair.bastion_key.key_name
   iam_instance_profile        = aws_iam_instance_profile.bastion.name
@@ -192,10 +180,8 @@ resource "aws_instance" "bastion" {
   
   user_data = local.user_data
 
-  # Enhanced monitoring
   monitoring = true
 
-  # EBS optimization
   ebs_optimized = true
 
   root_block_device {
@@ -219,7 +205,6 @@ resource "aws_instance" "bastion" {
   }
 }
 
-# Elastic IP for Bastion Host
 resource "aws_eip" "bastion" {
   instance = aws_instance.bastion.id
   domain   = "vpc"

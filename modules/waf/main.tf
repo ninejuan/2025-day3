@@ -149,7 +149,7 @@ resource "aws_wafv2_web_acl" "main" {
     }
   }
 
-  # PathWhitelist rule - commented out to allow natural 404/403 handling by ALB
+  # PathWhitelist rule - handling by ALB
   # rule {
   #   name     = "PathWhitelist"
   #   priority = 20

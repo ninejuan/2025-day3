@@ -1,4 +1,3 @@
-# DynamoDB CloudWatch Alarms
 resource "aws_cloudwatch_metric_alarm" "dynamodb_throttled_requests" {
   alarm_name          = "${var.prefix}-dynamodb-throttled-requests"
   comparison_operator = "GreaterThanThreshold"
@@ -57,7 +56,6 @@ resource "aws_cloudwatch_metric_alarm" "dynamodb_consumed_read_capacity" {
   tags = var.common_tags
 }
 
-# RDS CloudWatch Alarms
 resource "aws_cloudwatch_metric_alarm" "rds_cpu_utilization" {
   alarm_name          = "${var.prefix}-rds-cpu-utilization"
   comparison_operator = "GreaterThanThreshold"
@@ -96,13 +94,11 @@ resource "aws_cloudwatch_metric_alarm" "rds_database_connections" {
   tags = var.common_tags
 }
 
-# Service Monitoring Dashboard
 resource "aws_cloudwatch_dashboard" "service_monitoring" {
   dashboard_name = "${var.prefix}-service-monitoring"
 
   dashboard_body = jsonencode({
     widgets = concat(
-      # Database Performance (항상 표시)
       [
         {
           type   = "metric"
@@ -125,7 +121,6 @@ resource "aws_cloudwatch_dashboard" "service_monitoring" {
           }
         },
         
-        # DynamoDB Latency
         {
           type   = "metric"
           x      = 12
@@ -161,9 +156,7 @@ resource "aws_cloudwatch_dashboard" "service_monitoring" {
         }
       ],
       
-      # ALB 관련 위젯들 (ALB가 있을 때만)
       var.alb_arn_suffix != "" ? [
-        # SLO Response Time Metrics
         {
           type   = "metric"
           x      = 0

@@ -55,3 +55,32 @@ resource "aws_ecr_lifecycle_policy" "repositories" {
     ]
   })
 }
+
+resource "null_resource" "build_and_push_images" {
+  depends_on = [aws_ecr_repository.repositories]
+
+  triggers = {
+    repository_urls_json = jsonencode({ for name, repo in aws_ecr_repository.repositories : name => repo.repository_url })
+    prefix               = var.prefix
+    region               = data.aws_region.current.name
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<EOT
+set -euo pipefail
+REGION="${data.aws_region.current.name}"
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
+for app in product user stress; do
+  cd "${path.root}/app-files/$app"
+  docker build --platform linux/amd64 -t "${var.prefix}-$app:latest" .
+  docker tag "${var.prefix}-$app:latest" "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/${var.prefix}-$app:v1"
+  docker push "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/${var.prefix}-$app:v1"
+  cd - >/dev/null
+done
+EOT
+  }
+}
+
+data "aws_region" "current" {}

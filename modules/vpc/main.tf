@@ -1,9 +1,7 @@
-# Data sources for availability zones
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
-# VPC
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
@@ -14,7 +12,6 @@ resource "aws_vpc" "main" {
   })
 }
 
-# Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
@@ -23,7 +20,6 @@ resource "aws_internet_gateway" "main" {
   })
 }
 
-# Public Subnets - 3개 AZ에 분산 배치
 resource "aws_subnet" "public" {
   count = 3
 
@@ -39,7 +35,6 @@ resource "aws_subnet" "public" {
   })
 }
 
-# Private Subnets - 3개 AZ에 분산 배치 (애플리케이션용)
 resource "aws_subnet" "private" {
   count = 3
 
@@ -54,7 +49,6 @@ resource "aws_subnet" "private" {
   })
 }
 
-# Elastic IPs for NAT Gateways - 3개 AZ에 각각 1개씩
 resource "aws_eip" "nat" {
   count = 3
 
@@ -67,7 +61,6 @@ resource "aws_eip" "nat" {
   })
 }
 
-# NAT Gateways - 각 AZ에 1개씩 배치 (고가용성)
 resource "aws_nat_gateway" "main" {
   count = 3
 
@@ -82,7 +75,6 @@ resource "aws_nat_gateway" "main" {
   depends_on = [aws_internet_gateway.main]
 }
 
-# Route table for public subnets
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
@@ -96,7 +88,6 @@ resource "aws_route_table" "public" {
   })
 }
 
-# Route tables for private subnets - 각 AZ별로 분리
 resource "aws_route_table" "private" {
   count = 3
 
@@ -113,7 +104,6 @@ resource "aws_route_table" "private" {
   })
 }
 
-# Associate public subnets with public route table
 resource "aws_route_table_association" "public" {
   count = 3
 
@@ -121,12 +111,9 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
-# Associate private subnets with private route tables
 resource "aws_route_table_association" "private" {
   count = 3
 
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
 }
-
-

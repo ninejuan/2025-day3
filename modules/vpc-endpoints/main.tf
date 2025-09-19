@@ -1,7 +1,5 @@
-# Data source for current region
 data "aws_region" "current" {}
 
-# S3 Gateway Endpoint
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = var.vpc_id
   service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
@@ -14,7 +12,6 @@ resource "aws_vpc_endpoint" "s3" {
   })
 }
 
-# DynamoDB Gateway Endpoint
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id       = var.vpc_id
   service_name = "com.amazonaws.${data.aws_region.current.name}.dynamodb"
@@ -27,7 +24,6 @@ resource "aws_vpc_endpoint" "dynamodb" {
   })
 }
 
-# ECR Docker Registry Interface Endpoint
 resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.dkr"
@@ -43,7 +39,6 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   })
 }
 
-# ECR API Interface Endpoint
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.api"
@@ -59,7 +54,6 @@ resource "aws_vpc_endpoint" "ecr_api" {
   })
 }
 
-# CloudWatch Logs Interface Endpoint
 resource "aws_vpc_endpoint" "logs" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.logs"
@@ -75,7 +69,6 @@ resource "aws_vpc_endpoint" "logs" {
   })
 }
 
-# CloudWatch Monitoring Interface Endpoint
 resource "aws_vpc_endpoint" "monitoring" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.monitoring"
@@ -91,7 +84,6 @@ resource "aws_vpc_endpoint" "monitoring" {
   })
 }
 
-# ECS Interface Endpoint
 resource "aws_vpc_endpoint" "ecs" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.ecs"
@@ -107,7 +99,6 @@ resource "aws_vpc_endpoint" "ecs" {
   })
 }
 
-# ECS Agent Interface Endpoint
 resource "aws_vpc_endpoint" "ecs_agent" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.ecs-agent"
@@ -123,7 +114,6 @@ resource "aws_vpc_endpoint" "ecs_agent" {
   })
 }
 
-# ECS Telemetry Interface Endpoint
 resource "aws_vpc_endpoint" "ecs_telemetry" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.ecs-telemetry"
@@ -139,7 +129,6 @@ resource "aws_vpc_endpoint" "ecs_telemetry" {
   })
 }
 
-# SSM Interface Endpoints for Systems Manager
 resource "aws_vpc_endpoint" "ssm" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.ssm"
@@ -185,7 +174,6 @@ resource "aws_vpc_endpoint" "ec2_messages" {
   })
 }
 
-# Security Group for VPC Endpoints
 resource "aws_security_group" "vpc_endpoints" {
   name_prefix = "${var.prefix}-vpc-endpoints-"
   vpc_id      = var.vpc_id

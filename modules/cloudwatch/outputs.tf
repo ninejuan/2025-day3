@@ -35,11 +35,21 @@ output "alarm_arns" {
 }
 
 output "dashboard_url" {
-  description = "CloudWatch dashboard URL"
-  value       = "https://ap-northeast-2.console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#dashboards:name=${aws_cloudwatch_dashboard.service_monitoring.dashboard_name}"
+  description = "CloudWatch service dashboard URL"
+  value       = "https://ap-northeast-2.console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#dashboards:name=${aws_cloudwatch_dashboard.service_dashboard.dashboard_name}"
 }
 
 output "dashboard_name" {
-  description = "CloudWatch dashboard name"
-  value       = aws_cloudwatch_dashboard.service_monitoring.dashboard_name
+  description = "CloudWatch service dashboard name"
+  value       = aws_cloudwatch_dashboard.service_dashboard.dashboard_name
+}
+
+output "db_dashboard_url" {
+  description = "CloudWatch DB dashboard URL"
+  value       = "https://ap-northeast-2.console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#dashboards:name=${aws_cloudwatch_dashboard.db_dashboard.dashboard_name}"
+}
+
+output "db_dashboard_name" {
+  description = "CloudWatch DB dashboard name"
+  value       = aws_cloudwatch_dashboard.db_dashboard.dashboard_name
 }

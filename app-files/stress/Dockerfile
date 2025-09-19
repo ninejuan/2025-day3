@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY stress /app/stress
 
-RUN apk add --no-cache ca-certificates tzdata && \
+RUN apk add --no-cache ca-certificates tzdata gcompat && \
     chmod +x /app/stress
 
 EXPOSE 8080

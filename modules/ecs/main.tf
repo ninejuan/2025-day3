@@ -119,23 +119,6 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "cpu_low" {
-  alarm_name          = "${var.prefix}-cpu-low"
-  comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "3"
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/ECS"
-  period              = "300"
-  statistic           = "Average"
-  threshold           = "25"
-  alarm_description   = "Scale down if CPU < 25% for 15 minutes"
-  alarm_actions       = [aws_autoscaling_policy.cpu_scale_down.arn]
-
-  dimensions = {
-    ClusterName = aws_ecs_cluster.main.name
-  }
-}
-
 resource "aws_launch_template" "ecs" {
   name_prefix   = "${var.prefix}-ecs-lt"
   image_id      = data.aws_ami.amazon_linux.id

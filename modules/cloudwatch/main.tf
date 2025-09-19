@@ -94,114 +94,23 @@ resource "aws_cloudwatch_metric_alarm" "rds_database_connections" {
   tags = var.common_tags
 }
 
-resource "aws_cloudwatch_dashboard" "service_monitoring" {
-  dashboard_name = "${var.prefix}-service-monitoring"
 
-  dashboard_body = jsonencode({
-    widgets = concat(
-      [
-        {
-          type   = "metric"
-          x      = 0
-          y      = 0
-          width  = 12
-          height = 6
+# ALB 5XX Count Alarms (strict; any 5XX triggers)
+resource "aws_cloudwatch_metric_alarm" "alb_target_5xx" {
+  count               = var.alb_arn_suffix != "" ? 1 : 0
+  alarm_name          = "${var.prefix}-alb-target-5xx"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "HTTPCode_Target_5XX_Count"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Sum"
+  threshold           = "0"
+  treat_missing_data  = "notBreaching"
+  alarm_description   = "ALB target 5XX > 0"
+  alarm_actions       = var.sns_alarm_topic_arn != null ? [var.sns_alarm_topic_arn] : []
 
-          properties = {
-            metrics = [
-              ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", var.rds_instance_identifier, { "label" = "RDS CPU %" }],
-              [".", "DatabaseConnections", ".", ".", { "label" = "DB Connections" }],
-              ["AWS/DynamoDB", "ConsumedReadCapacityUnits", "TableName", var.dynamodb_table_name, { "label" = "DynamoDB Read" }],
-              [".", "ConsumedWriteCapacityUnits", ".", ".", { "label" = "DynamoDB Write" }]
-            ]
-            period = 60
-            stat   = "Average"
-            region = "ap-northeast-2"
-            title  = "🗃️ Database Performance"
-          }
-        },
-        
-        {
-          type   = "metric"
-          x      = 12
-          y      = 0
-          width  = 12
-          height = 6
-
-          properties = {
-            metrics = [
-              ["AWS/DynamoDB", "SuccessfulRequestLatency", "TableName", var.dynamodb_table_name, "Operation", "GetItem", { "label" = "GetItem Latency" }],
-              [".", ".", ".", ".", ".", "PutItem", { "label" = "PutItem Latency" }],
-              [".", "ThrottledRequests", ".", ".", { "label" = "Throttled Requests" }]
-            ]
-            period = 60
-            stat   = "Average"
-            region = "ap-northeast-2"
-            title  = "⚡ DynamoDB Performance"
-            yAxis = {
-              left = {
-                min = 0
-              }
-            }
-            annotations = {
-              horizontal = [
-                {
-                  label = "Target Latency (50ms)"
-                  value = 50
-                  color = "#ff7f0e"
-                }
-              ]
-            }
-          }
-        }
-      ],
-      
-      var.alb_arn_suffix != "" ? [
-        {
-          type   = "metric"
-          x      = 0
-          y      = 6
-          width  = 12
-          height = 6
-
-          properties = {
-            metrics = [
-              ["AWS/ApplicationELB", "TargetResponseTime", "TargetGroup", var.user_target_group_arn_suffix, { "label" = "User Service (Target: 0.2s)" }],
-              [".", ".", ".", var.product_target_group_arn_suffix, { "label" = "Product Service (Target: 0.2s)" }],
-              [".", ".", ".", var.stress_target_group_arn_suffix, { "label" = "Stress Service (Target: 1.0s)" }]
-            ]
-            period = 60
-            stat   = "Average"
-            region = "ap-northeast-2"
-            title  = "🎯 Service Response Time SLO"
-            yAxis = {
-              left = {
-                min = 0
-                max = 2
-              }
-            }
-            annotations = {
-              horizontal = [
-                {
-                  label = "User/Product SLO (0.2s)"
-                  value = 0.2
-                  color = "#ff7f0e"
-                },
-                {
-                  label = "Stress SLO (1.0s)"
-                  value = 1.0
-                  color = "#d62728"
-                },
-                {
-                  label = "Critical Threshold (5.0s)"
-                  value = 5.0
-                  color = "#ff0000"
-                }
-              ]
-            }
-          }
-        }
-      ] : []
-    )
-  })
+  dimensions = {
+    LoadBalancer = var.alb_arn_suffix
+  }
 }

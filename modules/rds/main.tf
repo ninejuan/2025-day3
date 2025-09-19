@@ -84,7 +84,6 @@ resource "aws_db_parameter_group" "main" {
   })
 }
 
-# IAM Role for RDS Enhanced Monitoring
 resource "aws_iam_role" "rds_monitoring" {
   name = "${var.prefix}-rds-monitoring-role"
 

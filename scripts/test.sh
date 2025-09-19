@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ALB_ENDPOINT="apdev-alb-2147375130.ap-northeast-2.elb.amazonaws.com"
+ALB_ENDPOINT="apdev-alb-1973322993.ap-northeast-2.elb.amazonaws.com"
 
 echo "ALB Test"
 

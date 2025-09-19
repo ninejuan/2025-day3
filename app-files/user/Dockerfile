@@ -9,4 +9,4 @@ RUN apk add --no-cache ca-certificates tzdata gcompat && \
 
 EXPOSE 8080
 
-ENTRYPOINT ["/app/user"]
+ENTRYPOINT ["/bin/sh", "-c", "/app/user 2>&1 | grep -v '/healthcheck' || true"]

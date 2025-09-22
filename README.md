@@ -4,7 +4,7 @@
 본 Terraform 프로젝트에서는 2025년도 전국기능경기대회 3과제 인프라 구축을 일부 자동화합니다.  
 자동화하는 항목은 다음과 같습니다.  
 - 1. VPC
-- 2. Bastion (t3.medium)
+- 2. (X) Bastion (t3.medium)
 - 3. RDS
 - 4. DynamoDB
 - 5. ECS Container
@@ -14,12 +14,12 @@
 
 ## ⚠️ TAA 전 체크리스트 (매우 주의!)
 - [ ] 반드시 app-files 내의 App을 심사 본부에서 제공된 바이너리 파일로 대체해야 함.
-- [ ] **Deploy, WAF, CW 모듈이 주석 처리되어 있는가?**
 
 ## TAA 후 작업
 - [ ] Bastion에 접근한 후, awscli 로그인, docker 설치를 진행합니다.
 - [ ] module/rds의 MySQL Table을 반영하고, 제공받은 dump 파일을 모두 rds에 반영합니다.
 - [ ] 제공받은 dump 파일에 있는 내용 중 하나만 뽑아 App 테스트를 진행합니다.
+- [ ] Stress App의 반환 패턴이 확인되면 ALB Listener Rule을 Fixed Response로 전환합니다. Fixed Response로 전환한 이후에도 반환이 잘 된다면 Service를 내립니다.
 
 ### MySQL Table 반영하는 방법
 ```sh

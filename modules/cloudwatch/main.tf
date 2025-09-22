@@ -94,10 +94,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_database_connections" {
   tags = var.common_tags
 }
 
-
-# ALB 5XX Count Alarms (strict; any 5XX triggers)
 resource "aws_cloudwatch_metric_alarm" "alb_target_5xx" {
-  count               = var.alb_arn_suffix != "" ? 1 : 0
   alarm_name          = "${var.prefix}-alb-target-5xx"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"

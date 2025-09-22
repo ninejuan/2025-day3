@@ -39,17 +39,17 @@ module "vpc_endpoints" {
   common_tags              = local.common_tags
 }
 
-module "bastion" {
-  source = "./modules/bastion"
+# module "bastion" {
+#   source = "./modules/bastion"
 
-  prefix            = var.prefix
-  vpc_id            = module.vpc.vpc_id
-  vpc_cidr_block   = module.vpc.vpc_cidr_block
-  public_subnet_ids = module.vpc.public_subnet_ids
-  instance_type     = var.bastion_instance_type
-  ssh_port         = var.ssh_port
-  common_tags      = local.common_tags
-}
+#   prefix            = var.prefix
+#   vpc_id            = module.vpc.vpc_id
+#   vpc_cidr_block   = module.vpc.vpc_cidr_block
+#   public_subnet_ids = module.vpc.public_subnet_ids
+#   instance_type     = var.bastion_instance_type
+#   ssh_port         = var.ssh_port
+#   common_tags      = local.common_tags
+# }
 
 module "dynamodb" {
   source = "./modules/dynamodb"
@@ -148,7 +148,6 @@ module "deploy" {
   depends_on = [
     module.vpc,
     module.vpc_endpoints,
-    module.bastion,
     module.rds,
     module.dynamodb,
     module.s3,
@@ -163,6 +162,20 @@ module "waf" {
   prefix = var.prefix
   common_tags = local.common_tags
   alb_arn = module.deploy.alb_arn
+
+  depends_on = [module.deploy]
+}
+
+module "cloudfront" {
+  source = "./modules/cloudfront"
+
+  prefix             = var.prefix
+  common_tags        = local.common_tags
+  origin_domain_name = module.deploy.alb_dns_name
+
+  min_ttl     = 0
+  default_ttl = 600
+  max_ttl     = 1800
 
   depends_on = [module.deploy]
 }

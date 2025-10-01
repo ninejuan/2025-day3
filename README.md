@@ -18,7 +18,6 @@
 ## TAA 후 작업 (PS Instance에서 진행)
 - [ ] module/rds의 MySQL Table을 반영하고, 제공받은 dump 파일을 모두 rds에 반영합니다.
 - [ ] 제공받은 dump 파일에 있는 내용 중 하나만 뽑아 App GET 테스트를 진행합니다.
-- [ ] Stress App의 반환 패턴이 확인되면 ALB Listener Rule을 Fixed Response로 전환합니다. Fixed Response로 전환한 이후에도 반환이 잘 된다면 Service를 내립니다.
 
 ### MySQL Table 반영하는 방법
 ```sh

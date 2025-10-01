@@ -3,6 +3,7 @@
 
 본 Terraform 프로젝트에서는 2025년도 전국기능경기대회 3과제 인프라 구축을 일부 자동화합니다.  
 자동화하는 항목은 다음과 같습니다.  
+대회 당일 인스턴스 타입이 t3.medium에서 c5.large로 변경되었습니다.  
 - 1. VPC
 - 2. (X) Bastion (t3.medium)
 - 3. RDS
@@ -56,7 +57,7 @@ aws ssm start-session --target $(aws ec2 describe-instances --filters "Name=tag:
 aws ecs list-clusters
 
 # ECS 서비스 확인
-aws ecs list-services --cluster <cluster-name>
+aws ecs list-services --cluster apdev-ecs-cluster
 
 # 컨테이너 로그 확인
 aws logs describe-log-groups --log-group-name-prefix "/ecs/"
@@ -65,7 +66,7 @@ aws logs describe-log-groups --log-group-name-prefix "/ecs/"
 #### 4. RDS 접근 (SSM Session 내에서)
 ```bash
 # SSM Session 내에서 MySQL 클라이언트 설치
-sudo yum install mysql -y
+sudo yum install mariadb105 -y
 
 # RDS에 접근
 mysql -h <rds_endpoint> -P 3306 -u admin -p
